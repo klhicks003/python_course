@@ -1,4 +1,7 @@
-time = 1741604400
-time = time + 60
+def main():
+    print(str(time + 300) + " in " + timezone)
 
-print(time)
+time = 1741604400
+timezone = "US/Eastern"
+
+main()
