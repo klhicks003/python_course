@@ -1,3 +1,5 @@
+import csv
+
 def dashboard(): 
     print('=' * 40)
     print("📚  YOUR LIBRARY")
@@ -5,8 +7,8 @@ def dashboard():
 
 
 def estimate_reading_time(pages):
-    estimate_reading_time = pages / 40
-    return round(estimate_reading_time, 1)
+    total_hours = pages / 40
+    return round(total_hours, 1)
 
 
 def add_book(library):
@@ -24,16 +26,40 @@ def add_book(library):
    }
    
     library.append(book)
+    
+    with open("books.csv", "a") as file:
+        writer = csv.DictWriter(file, fieldnames= ["title", "author", "pages", "hours"])
+        writer.writerow(book)
+        
     print(f"Book added: The {title} by {author} is approx. {hours} hours to read.")
+   
+def load_books():
+    library = []
+    
+    with open("books.csv", "r") as file:
+        reader = csv.DictReader(file)
+        
+        for row in reader:
+            book = {
+                "title": row["title"],
+                "author": row["author"],
+                "pages": int(row["pages"]),
+                "hours": float(row["hours"])
+             }
+            library.append(book)
+    return library
+
+def format_book(book,number):
+        return f"{number}. '{book['title']}' - {book['author']} ({book['pages']} pages - approx. {book['hours']} hours to read)"
    
 def view_books(library):
     if len(library) == 0:
         print("Your library is empty. Add a book first!")
     else:
         for i in range(len(library)):
-            book = library[i]
-            print(f"{i +1}) '{book['title']}' - {book['author']} ({book['pages']} pages - approx. {book['hours']} hours to read)")
- 
+            book = format_book(library[i], i +1)
+            print(book)
+            
 def show_menu():
     print("What would you like to do?")
     print()
@@ -48,7 +74,7 @@ def show_menu():
 def main():
     dashboard()
     
-    library = []
+    library = load_books()
     while True:
         choice = show_menu()
         
@@ -56,7 +82,7 @@ def main():
             view_books(library)
         elif choice == "2":
             add_book(library)
-        elif choice == "q" or "Quit" or "Exit":
+        elif choice == "q" or choice == "quit" or choice == "exit":
             print("Exit")
             break
         else:
